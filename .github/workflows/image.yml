@@ -1,0 +1,18 @@
+name: CI workflow
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pull repo
+      uses: actions/checkout@v4
+    - name: Build The Docker Image
+      run: docker build . --file Dockerfile --tag flash_app:$(date +%s)
+    - name: List images
+      run: docker images
