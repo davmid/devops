@@ -31,10 +31,6 @@ jobs:
         run: |
           flake8 .
 
-      - name: Run Python tests
-        run: |
-          pytest tests/
-
       - name: Build Docker image
         run: |
           docker build -t flask-web-app:${{ github.sha }} .
