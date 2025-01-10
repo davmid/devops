@@ -28,7 +28,10 @@ jobs:
           docker build -t flask-web-app .
       - name: Install Trivy
         run: |
-          curl -s https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo bash
+          curl -s https://github.com/aquasecurity/trivy/releases/download/v0.22.0/trivy_0.22.0_Linux-x86_64.deb -o trivy.deb
+          sudo dpkg -i trivy.deb
+          sudo apt-get install -f
+
       - name: Run Trivy scan on Docker image
         run: |
           trivy image --exit-code 1 --no-progress flask-web-app
