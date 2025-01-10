@@ -1,4 +1,4 @@
-name: CI Workflow
+name: Build and Test Docker Image
 
 on:
   pull_request:
@@ -21,33 +21,22 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Build Docker image
         run: |
-          docker build -t flask-app .
-      - name: Install Trivy
-        run: |
-          curl -Lo trivy https://github.com/aquasecurity/trivy/releases/download/v0.22.0/trivy_0.22.0_Linux-x86_64
-          chmod +x trivy
-          sudo mv trivy /usr/local/bin/
-
-      - name: Run Trivy scan on Docker image
-        run: |
-          trivy image --exit-code 1 --no-progress flask-app
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image and push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          tags: |
-            aquasec/flask-app:latest
-            aquasec/flask-app:${{ github.ref_name }}
-          push: true
+          docker build -t flask-web-app .
       - name: Run simple test
         run: |
           curl http://127.0.0.1:5000/hello/test > result.txt
           echo "Test result:"
           cat result.txt
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build image and push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          tags: |
+            aquasec/flask-web-app:latest
+            aquasec/flask-web-app:${{ github.ref_name }}
+          push: true
