@@ -1,16 +1,36 @@
-name: CI workflow
+name: CI Workflow
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Pull repo
-      uses: actions/checkout@v4
-    - name: hello
-      run: echo 'Hello'
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build Docker image
+        run: |
+          docker build -t flask-web-app .
+      - name: Install Trivy
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo bash
+      - name: Run Trivy scan on Docker image
+        run: |
+          trivy image --exit-code 1 --no-progress flask-web-app
+      - name: Run basic test (echo command)
+        run: echo "Test"
