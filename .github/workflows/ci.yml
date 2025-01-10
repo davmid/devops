@@ -25,7 +25,7 @@ jobs:
       - name: Run Flask application in Docker container
         run: |
           docker run -d -p 5000:5000 flask-web-app
-          sleep 10  # Wait for the app to start
+          sleep 10 
       - name: Run simple test (curl)
         run: |
           curl http://127.0.0.1:5000/hello/test > result.txt
