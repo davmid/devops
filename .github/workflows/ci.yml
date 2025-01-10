@@ -35,6 +35,11 @@ jobs:
         run: |
           docker build -t flask-web-app:${{ github.sha }} .
 
+      - name: Run Flask application in Docker container
+        run: |
+          docker run -d -p 5000:5000 flask-web-app:${{ github.sha }}
+          sleep 10 
+
       - name: Run basic test (curl)
         run: |
           curl http://127.0.0.1:5000/hello/test > result.txt
